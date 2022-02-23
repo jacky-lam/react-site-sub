@@ -1,0 +1,30 @@
+{
+    "extends": "react-app",
+    "rules": {
+        "import/default": ["error"],
+        "import/named": ["error"],
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": [
+                    "babel.config.js",
+                    "server/server.js",
+                    "site-cypress/**",
+                    "**/*.stories.js",
+                    "**/*.test.js",
+                    ".jest/**"
+                ]
+            }
+        ],
+        "import/no-unresolved": ["error"],
+        "no-var": "error"
+    },
+    "settings": {
+        "import/resolver": {
+            "alias": [
+                ["common", "./common"],
+                ["components", "./components"]
+            ]
+        }
+    }
+}

@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+server.crt
+server.key
+bundle.pem
+npm-debug.log
+npm-debug.*
+/.env
+.next
+*.log
+/docs

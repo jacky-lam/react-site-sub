@@ -1,0 +1,38 @@
+version: 2.1
+orbs:
+    # https://circleci.com/developer/orbs/orb/circleci/node
+    node: circleci/node@4.1.0
+    # https://circleci.com/developer/orbs/orb/circleci/aws-ecr
+    aws-ecr: circleci/aws-ecr@6.15.0
+jobs:
+    unit_test:
+        executor:
+            name: node/default
+            tag: 15.6.0
+        environment:
+            NODE_ENV: development # run test in development (because it need devDependencies)
+        steps:
+            - checkout
+            - node/install-packages:
+                  pkg-manager: npm
+            - run:
+                  command: npm test
+                  name: Run unit tests
+            - store_artifacts: # store test results - only works for production build
+                  path: /tmp/test-results
+                  destination: raw-test-output
+            - store_test_results:
+                  path: /tmp/test-results
+
+workflows:
+    test_build_deploy:
+        jobs:
+            - unit_test
+            # only turn on when we need to deploy (AWS is not free to deploy ECR)
+            # - aws-ecr/build-and-push-image:
+            #       repo: react-site
+            #       tag: 'latest,v0.1.${CIRCLE_BUILD_NUM}'
+            #       dockerfile: Dockerfile
+            #       path: .
+            #       requires:
+            #           - unit_test

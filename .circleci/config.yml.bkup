@@ -1,0 +1,76 @@
+version: 2.1
+
+# Parameters
+
+# basic docker setup
+defaults: &defaults
+    working_directory: ~/repo
+    docker:
+        - image: circleci/node:15.6.0
+          environment:
+              TERM: xterm ## this enables colors in the output
+
+# cache
+default_save_cache: &default_save_cache
+    key: dependency-cache-{{ checksum "package.json" }}
+    paths:
+        - ./node_modules
+        - ./package-lock.json
+
+default_cache_keys: &default_cache_keys
+    key: dependency-cache-{{ checksum "package.json" }}
+
+# Jobs
+jobs:
+    setup:
+        <<: *defaults # basic docker setup
+        steps:
+            - checkout # pull code from GitHub
+            - run:
+                  name: Update NPM
+                  command: 'sudo npm install -g npm@5'
+            - restore_cache: *default_cache_keys
+            - run:
+                  name: Install Dependencies
+                  command: npm install
+            - save_cache: *default_save_cache
+
+    unit_test:
+        <<: *defaults # basic docker setup
+        steps:
+            - checkout
+            - restore_cache: *default_cache_keys
+            - run:
+                  name: Install Dependencies
+                  command: npm install
+            - run:
+                  name: Run tests
+                  command: npm run test
+
+    build:
+        <<: *defaults # basic docker setup
+        steps:
+            - checkout
+            - restore_cache: *default_cache_keys
+            - run:
+                  name: Install Dependencies
+                  command: npm install
+            - run:
+                  name: Creating a Next build
+                  command: npm build
+            #- persist_to_workspace:
+            #    root: ~/repo
+
+# Workflow
+workflows:
+    version: 2
+    build_and_test:
+        # parallelism: 2 # run 2 jobs concurrently (CircleCI free account blocks this setting)
+        jobs:
+            - setup
+            - unit_test:
+                  requires:
+                      - setup
+            - build:
+                  requires:
+                      - setup

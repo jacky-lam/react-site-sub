@@ -1,0 +1,28 @@
+{
+    "presets": ["next/babel"],
+    "plugins": [
+        [
+            "babel-plugin-root-import",
+            {
+                "paths": [
+                    {
+                        "rootPathSuffix": "./common",
+                        "rootPathPrefix": "common"
+                    },
+                    {
+                        "rootPathSuffix": "./components",
+                        "rootPathPrefix": "components"
+                    }
+                ]
+            }
+        ],
+        [
+            "emotion",
+            {
+                "sourceMap": true, //Turn off in production build
+                "cssPropOptimization": true
+            }
+        ],
+        "inline-react-svg"
+    ]
+}
